@@ -1,0 +1,17 @@
+[project]
+name = "py-secretfile"
+version = "0.0.1"
+description = "python library for Secretfile"
+authors = [
+    {name = "Michael Golisch",email = "mgolisch@googlemail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "hvac (>=2.4.0,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
