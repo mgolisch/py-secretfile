@@ -4,8 +4,63 @@ import argparse
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from . import load_secretfile
+
+
+def _find_git_root(start_dir: Path) -> Path | None:
+    current = start_dir
+    while True:
+        marker = current / ".git"
+        if marker.exists():
+            return current
+        parent = current.parent
+        if parent == current:
+            return None
+        current = parent
+
+
+def _find_file_upward(
+    *,
+    filename: str,
+    start_dir: Path,
+    stop_dir: Path | None,
+    max_depth: int,
+) -> Path | None:
+    current = start_dir
+    depth = 0
+    while True:
+        candidate = current / filename
+        if candidate.is_file():
+            return candidate
+        if stop_dir is not None and current == stop_dir:
+            return None
+        parent = current.parent
+        if parent == current:
+            return None
+        depth += 1
+        if depth > max_depth:
+            return None
+        current = parent
+
+
+def _resolve_secretfile_path(file_arg: str) -> str:
+    path = Path(file_arg)
+    if path.is_absolute() or path.parent != Path("."):
+        return file_arg
+
+    start_dir = Path.cwd()
+    git_root = _find_git_root(start_dir)
+    resolved = _find_file_upward(
+        filename=file_arg,
+        start_dir=start_dir,
+        stop_dir=git_root,
+        max_depth=25,
+    )
+    if resolved is None:
+        return file_arg
+    return str(resolved)
 
 
 def main() -> int:
@@ -43,8 +98,19 @@ def main() -> int:
 
     args = parser.parse_args()
 
+    secretfile_path = _resolve_secretfile_path(args.file)
+    if (
+        Path(args.file).parent == Path(".")
+        and not Path(args.file).is_absolute()
+        and Path(secretfile_path) == Path(args.file)
+        and not Path(secretfile_path).is_file()
+    ):
+        parser.error(
+            f"{args.file} not found in current or parent directories"
+        )
+
     bundle = load_secretfile(
-        path=args.file,
+        path=secretfile_path,
         kv_version=args.kv_version,
         mount=args.mount,
     )

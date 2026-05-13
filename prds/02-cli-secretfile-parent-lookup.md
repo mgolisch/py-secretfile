@@ -60,3 +60,6 @@ This PRD specifies upward directory discovery for a bare filename (default `Secr
 ## Risks / Considerations
 - Git detection must behave sensibly when git is unavailable or when run outside a worktree.
 - Ensure the chosen error message does not reveal secret values (only filesystem paths).
+
+## Status
+- Implemented (2026-05-13)
