@@ -7,7 +7,7 @@ from typing import Iterable, Mapping
 
 from .exceptions import MissingInterpolation, SecretfileParseError
 
-_ENV_KEY_RE = re.compile(r"^[A-Z_][A-Z0-9_]*$")
+_ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _INTERPOLATION_RE = re.compile(r"\$(\w+)|\$\{([^}]+)\}")
 
 

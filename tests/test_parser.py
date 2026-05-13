@@ -29,6 +29,20 @@ def test_parse_validates_env_key():
         _parse_lines(["bad-key secrets/app:key"], env={}, source="Secretfile")
 
 
+def test_parse_allows_mixed_case_env_key():
+    entries = _parse_lines(
+        ["TF_TOKEN_app_terraform_io secrets/app:token"],
+        env={},
+        source="Secretfile",
+    )
+    assert entries[0].env_key == "TF_TOKEN_app_terraform_io"
+
+
+def test_parse_rejects_leading_digit_env_key():
+    with pytest.raises(SecretfileParseError):
+        _parse_lines(["1BAD secrets/app:key"], env={}, source="Secretfile")
+
+
 def test_parse_splits_on_last_colon():
     entries = _parse_lines(
         ["TOKEN secret/path:with:colons:value"],

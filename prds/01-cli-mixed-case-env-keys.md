@@ -54,3 +54,6 @@ This PRD specifies a change to accept mixed-case keys while keeping validation a
 ## Risks / Considerations
 - Some platforms/shells may allow broader env key sets; this project intentionally limits keys to portable shell identifiers.
 - Ensure parse errors do not leak secret values (only key names and file locations).
+
+## Status
+- Implemented (2026-05-13)
